@@ -1,4 +1,5 @@
 import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { CaseUtils } from "./case-utils";
 
 // Remember to rename these classes and interfaces!
 
@@ -12,6 +13,7 @@ const DEFAULT_SETTINGS: MyPluginSettings = {
 
 export default class MyPlugin extends Plugin {
 	settings: MyPluginSettings;
+	private caseUtils = new CaseUtils();
 
 	async onload() {
 		await this.loadSettings();
@@ -21,7 +23,7 @@ export default class MyPlugin extends Plugin {
 			id: 'toggle-case',
 			name: 'Toggle Case',
 			callback: () => {
-				new Notice('Do thing!')
+				new Notice(this.caseUtils.getNotificationText())
 			}
 		});
 		// This adds an editor command that can perform some operation on the current editor instance
