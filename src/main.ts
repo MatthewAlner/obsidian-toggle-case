@@ -1,7 +1,15 @@
-import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import type { EditorSelection } from 'obsidian';
+import { App, Editor, MarkdownView, Plugin, PluginSettingTab, Setting } from 'obsidian';
 import { CaseUtils } from "./case-utils";
+import { CASE, LOWERCASE_ARTICLES } from './constants';
+import {
+	defaultMultipleSelectionOptions,
+	getSelectionBoundaries,
+	withMultipleSelections,
+	wordRangeAtPos,
+} from './utils';
 
-// Remember to rename these classes and interfaces!
+// Remember to rename these classes and interfaces!!
 
 interface MyPluginSettings {
 	mySetting: string;
@@ -22,9 +30,11 @@ export default class MyPlugin extends Plugin {
 		this.addCommand({
 			id: 'toggle-case',
 			name: 'Toggle Case',
-			callback: () => {
-				new Notice(this.caseUtils.getNotificationText())
-			}
+			editorCallback: (editor) =>
+				withMultipleSelections(editor, transformCase, {
+					...defaultMultipleSelectionOptions,
+					args: CASE.UPPER,
+				}),
 		});
 		// This adds an editor command that can perform some operation on the current editor instance
 		this.addCommand({
@@ -61,6 +71,54 @@ export default class MyPlugin extends Plugin {
 		await this.saveData(this.settings);
 	}
 }
+
+export const transformCase = (
+	editor: Editor,
+	selection: EditorSelection,
+	caseType: CASE,
+) => {
+	let { from, to } = getSelectionBoundaries(selection);
+	let selectedText = editor.getRange(from, to);
+
+	// apply transform on word at cursor if nothing is selected
+	if (selectedText.length === 0) {
+		const pos = selection.head;
+		const { anchor, head } = wordRangeAtPos(pos, editor.getLine(pos.line));
+		[from, to] = [anchor, head];
+		selectedText = editor.getRange(anchor, head);
+	}
+
+	if (caseType === CASE.TITLE) {
+		editor.replaceRange(
+			// use capture group to join with the same separator used to split
+			selectedText
+				.split(/(\s+)/)
+				.map((word, index, allWords) => {
+					if (
+						index > 0 &&
+						index < allWords.length - 1 &&
+						LOWERCASE_ARTICLES.includes(word.toLowerCase())
+					) {
+						return word.toLowerCase();
+					}
+					return word.charAt(0).toUpperCase() + word.substring(1).toLowerCase();
+				})
+				.join(''),
+			from,
+			to,
+		);
+	} else {
+		editor.replaceRange(
+			caseType === CASE.UPPER
+				? selectedText.toUpperCase()
+				: selectedText.toLowerCase(),
+			from,
+			to,
+		);
+	}
+
+	return selection;
+};
 
 class SampleSettingTab extends PluginSettingTab {
 	plugin: MyPlugin;
