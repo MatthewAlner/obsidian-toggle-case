@@ -1,6 +1,6 @@
 import type { EditorSelection } from 'obsidian';
 import { App, Editor, Plugin, PluginSettingTab, Setting } from 'obsidian';
-import { CASE, LOWERCASE_ARTICLES } from './constants';
+import { LOWERCASE_ARTICLES } from './constants';
 import {
 	defaultMultipleSelectionOptions,
 	getSelectionBoundaries,
@@ -29,10 +29,11 @@ export default class ToggleCasePlugin extends Plugin {
 			id: 'toggle-case',
 			name: 'Toggle Case',
 			editorCallback: (editor) =>
-				withMultipleSelections(editor, transformCase, {
-					...defaultMultipleSelectionOptions,
-					args: CASE.NEXT,
-				}),
+				withMultipleSelections(
+					editor,
+					toggleCase,
+					{ ...defaultMultipleSelectionOptions }
+				),
 		});
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
@@ -48,10 +49,9 @@ export default class ToggleCasePlugin extends Plugin {
 	}
 }
 
-export const transformCase = (
+export const toggleCase = (
 	editor: Editor,
 	selection: EditorSelection,
-	caseType: CASE,
 ) => {
 	let { from, to } = getSelectionBoundaries(selection);
 	let selectedText = editor.getRange(from, to);
@@ -64,27 +64,7 @@ export const transformCase = (
 		selectedText = editor.getRange(anchor, head);
 	}
 
-	let replacementText = selectedText;
-
-	switch(caseType) {
-		case CASE.UPPER: {
-			replacementText = selectedText.toUpperCase();
-			break
-		}
-		case CASE.LOWER: {
-			replacementText = selectedText.toLowerCase();
-			break
-		}
-		case CASE.TITLE: {
-			replacementText = toTitleCase(selectedText);
-			break
-		}
-		case CASE.NEXT: {
-			replacementText = getNextCase(selectedText);
-			break
-		}
-	}
-
+	const replacementText: string = getNextCase(selectedText);
 	editor.replaceRange(replacementText, from, to);
 
 	return selection;
