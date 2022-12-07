@@ -124,8 +124,8 @@ class SettingsTab extends PluginSettingTab {
 		containerEl.createEl('h2', {text: 'Settings for my awesome plugin.'});
 
 		new Setting(containerEl)
-			.setName('Setting #1')
-			.setDesc('It\'s a secret')
+			.setName('Sync case multi-cursor')
+			.setDesc('When there are multiple selections, apply the same case transformation to all.')
 			.addToggle(toggle => toggle
 				.setValue(this.plugin.settings.shouldSyncCaseMultiCursor)
 				.onChange(async (value) => {
