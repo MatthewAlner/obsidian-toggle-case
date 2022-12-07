@@ -22,3 +22,7 @@ Go to Settings → Hotkeys to customise the keyboard shortcut for "Toggle Case".
 
 Many thanks to [obsidian-editor-shortcuts](https://github.com/timhor/obsidian-editor-shortcuts) from which this is largely copied / based on.
 Take a look if you want a much more comprehensive set of common code editor shortcuts.
+
+
+https://user-images.githubusercontent.com/2782730/206288618-2b1cebd5-14f5-4e06-b353-fbc740394ea8.mp4
+
