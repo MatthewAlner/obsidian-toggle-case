@@ -31,7 +31,7 @@ export default class ToggleCasePlugin extends Plugin {
 			editorCallback: (editor) =>
 				withMultipleSelections(
 					editor,
-					toggleCase,
+					(editor, selection) => this.toggleCase(editor,selection),
 					{ ...defaultMultipleSelectionOptions }
 				),
 		});
@@ -47,63 +47,60 @@ export default class ToggleCasePlugin extends Plugin {
 	async saveSettings() {
 		await this.saveData(this.settings);
 	}
-}
 
-export const toggleCase = (
-	editor: Editor,
-	selection: EditorSelection,
-) => {
-	let { from, to } = getSelectionBoundaries(selection);
-	let selectedText = editor.getRange(from, to);
+	private toggleCase( editor: Editor, selection: EditorSelection ) {
+		let { from, to } = getSelectionBoundaries(selection);
+		let selectedText = editor.getRange(from, to);
 
-	// apply transform on word at cursor if nothing is selected
-	if (selectedText.length === 0) {
-		const pos = selection.head;
-		const { anchor, head } = wordRangeAtPos(pos, editor.getLine(pos.line));
-		[from, to] = [anchor, head];
-		selectedText = editor.getRange(anchor, head);
+		// apply transform on word at cursor if nothing is selected
+		if (selectedText.length === 0) {
+			const pos = selection.head;
+			const { anchor, head } = wordRangeAtPos(pos, editor.getLine(pos.line));
+			[from, to] = [anchor, head];
+			selectedText = editor.getRange(anchor, head);
+		}
+
+		const replacementText: string = this.getNextCase(selectedText);
+		editor.replaceRange(replacementText, from, to);
+
+		return selection;
 	}
 
-	const replacementText: string = getNextCase(selectedText);
-	editor.replaceRange(replacementText, from, to);
+	private toTitleCase(selectedText: string) {
+		// use capture group to join with the same separator used to split
+		return selectedText
+			.split(/(\s+)/)
+			.map((word, index, allWords) => {
+				if (
+					index > 0 &&
+					index < allWords.length - 1 &&
+					LOWERCASE_ARTICLES.includes(word.toLowerCase())
+				) {
+					return word.toLowerCase();
+				}
+				return word.charAt(0).toUpperCase() + word.substring(1).toLowerCase();
+			})
+			.join('')
+	}
 
-	return selection;
-};
+	private getNextCase(selectedText: string): string {
+		const textUpper = selectedText.toUpperCase();
+		const textLower = selectedText.toLowerCase();
+		const textTitle = this.toTitleCase(selectedText);
 
-export const toTitleCase = (selectedText: string) => {
-	// use capture group to join with the same separator used to split
-	return selectedText
-		.split(/(\s+)/)
-		.map((word, index, allWords) => {
-			if (
-				index > 0 &&
-				index < allWords.length - 1 &&
-				LOWERCASE_ARTICLES.includes(word.toLowerCase())
-			) {
-				return word.toLowerCase();
+		switch(selectedText) {
+			case textUpper: {
+				return textLower;
 			}
-			return word.charAt(0).toUpperCase() + word.substring(1).toLowerCase();
-		})
-		.join('')
-}
-
-export const getNextCase = (selectedText: string): string => {
-	const textUpper = selectedText.toUpperCase();
-	const textLower = selectedText.toLowerCase();
-	const textTitle = toTitleCase(selectedText);
-
-	switch(selectedText) {
-		case textUpper: {
-			return textLower;
-		}
-		case textLower: {
-			return textTitle;
-		}
-		case textTitle: {
-			return textUpper;
-		}
-		default: {
-			return textUpper;
+			case textLower: {
+				return textTitle;
+			}
+			case textTitle: {
+				return textUpper;
+			}
+			default: {
+				return textUpper;
+			}
 		}
 	}
 }
