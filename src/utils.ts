@@ -1,5 +1,4 @@
 import { Editor, EditorPosition, EditorSelection, EditorSelectionOrCaret, } from 'obsidian';
-import { DIRECTION } from './constants';
 import { CustomSelectionHandler } from './custom-selection-handlers';
 
 type EditorActionCallback = (

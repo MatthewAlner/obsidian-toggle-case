@@ -1,6 +1,5 @@
 import type { EditorSelection } from 'obsidian';
-import { App, Editor, MarkdownView, Plugin, PluginSettingTab, Setting } from 'obsidian';
-import { CaseUtils } from "./case-utils";
+import { App, Editor, Plugin, PluginSettingTab, Setting } from 'obsidian';
 import { CASE, LOWERCASE_ARTICLES } from './constants';
 import {
 	defaultMultipleSelectionOptions,
@@ -11,17 +10,16 @@ import {
 
 // Remember to rename these classes and interfaces!!
 
-interface MyPluginSettings {
-	mySetting: string;
+interface IPluginSettings {
+	shouldSyncCaseMultiCursor: boolean;
 }
 
-const DEFAULT_SETTINGS: MyPluginSettings = {
-	mySetting: 'default'
+const DEFAULT_SETTINGS: IPluginSettings = {
+	shouldSyncCaseMultiCursor: true
 }
 
-export default class MyPlugin extends Plugin {
-	settings: MyPluginSettings;
-	private caseUtils = new CaseUtils();
+export default class ToggleCasePlugin extends Plugin {
+	settings: IPluginSettings;
 
 	async onload() {
 		await this.loadSettings();
@@ -36,18 +34,9 @@ export default class MyPlugin extends Plugin {
 					args: CASE.NEXT,
 				}),
 		});
-		// This adds an editor command that can perform some operation on the current editor instance
-		this.addCommand({
-			id: 'sample-editor-command',
-			name: 'Sample editor command',
-			editorCallback: (editor: Editor, view: MarkdownView) => {
-				console.log(editor.getSelection());
-				editor.replaceSelection('Sample Editor Command');
-			}
-		});
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
-		this.addSettingTab(new SampleSettingTab(this.app, this));
+		this.addSettingTab(new SettingsTab(this.app, this));
 
 		// If the plugin hooks up any global DOM events (on parts of the app that doesn't belong to this plugin)
 		// Using this function will automatically remove the event listener when this plugin is disabled.
@@ -152,10 +141,10 @@ export const getNextCase = (selectedText: string): string => {
 	}
 }
 
-class SampleSettingTab extends PluginSettingTab {
-	plugin: MyPlugin;
+class SettingsTab extends PluginSettingTab {
+	plugin: ToggleCasePlugin;
 
-	constructor(app: App, plugin: MyPlugin) {
+	constructor(app: App, plugin: ToggleCasePlugin) {
 		super(app, plugin);
 		this.plugin = plugin;
 	}
@@ -170,12 +159,10 @@ class SampleSettingTab extends PluginSettingTab {
 		new Setting(containerEl)
 			.setName('Setting #1')
 			.setDesc('It\'s a secret')
-			.addText(text => text
-				.setPlaceholder('Enter your secret')
-				.setValue(this.plugin.settings.mySetting)
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.shouldSyncCaseMultiCursor)
 				.onChange(async (value) => {
-					console.log('Secret: ' + value);
-					this.plugin.settings.mySetting = value;
+					this.plugin.settings.shouldSyncCaseMultiCursor = value;
 					await this.plugin.saveSettings();
 				}));
 	}
