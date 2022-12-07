@@ -20,7 +20,7 @@ const DEFAULT_SETTINGS: IPluginSettings = {
 
 export default class ToggleCasePlugin extends Plugin {
 	public settings: IPluginSettings;
-	private caseSyncSelectedText: string | null = null;
+	private caseSyncCheckText: string | null = null;
 
 	async onload() {
 		await this.loadSettings();
@@ -88,29 +88,29 @@ export default class ToggleCasePlugin extends Plugin {
 		let textToCheck: string = selectedText;
 
 		if (this.settings.shouldSyncCaseMultiCursor && index === 0) {
-			this.caseSyncSelectedText = selectedText;
+			this.caseSyncCheckText = selectedText;
 		}
 
-		if (this.settings.shouldSyncCaseMultiCursor && this.caseSyncSelectedText) {
-			textToCheck = this.caseSyncSelectedText;
+		if (this.settings.shouldSyncCaseMultiCursor && this.caseSyncCheckText) {
+			textToCheck = this.caseSyncCheckText;
 		}
 
-		const textUpper = textToCheck.toUpperCase();
-		const textLower = textToCheck.toLowerCase();
-		const textTitle = this.toTitleCase(textToCheck);
+		const checkTextUpper = textToCheck.toUpperCase();
+		const checkTextLower = textToCheck.toLowerCase();
+		const checkTextTitle = this.toTitleCase(textToCheck);
 
 		switch(textToCheck) {
-			case textUpper: {
-				return textLower;
+			case checkTextUpper: {
+				return selectedText.toLowerCase();
 			}
-			case textLower: {
-				return textTitle;
+			case checkTextLower: {
+				return this.toTitleCase(selectedText);
 			}
-			case textTitle: {
-				return textUpper;
+			case checkTextTitle: {
+				return selectedText.toUpperCase();
 			}
 			default: {
-				return textUpper;
+				return selectedText.toUpperCase();
 			}
 		}
 	}
