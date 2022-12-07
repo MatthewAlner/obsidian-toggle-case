@@ -24,7 +24,7 @@ export default class ToggleCasePlugin extends Plugin {
 	async onload() {
 		await this.loadSettings();
 
-		// This adds a simple command that can be triggered anywhere
+		// This adds a command that can be triggered when in editor mode
 		this.addCommand({
 			id: 'toggle-case',
 			name: 'Toggle Case',
@@ -37,19 +37,6 @@ export default class ToggleCasePlugin extends Plugin {
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new SettingsTab(this.app, this));
-
-		// If the plugin hooks up any global DOM events (on parts of the app that doesn't belong to this plugin)
-		// Using this function will automatically remove the event listener when this plugin is disabled.
-		this.registerDomEvent(document, 'click', (evt: MouseEvent) => {
-			console.log('click', evt);
-		});
-
-		// When registering intervals, this function will automatically clear the interval when the plugin is disabled.
-		this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
-	}
-
-	onunload() {
-
 	}
 
 	async loadSettings() {
