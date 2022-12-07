@@ -4,6 +4,7 @@ import { CustomSelectionHandler } from './custom-selection-handlers';
 type EditorActionCallback = (
 	editor: Editor,
 	selection: EditorSelection,
+	index: number,
 	args?: string,
 ) => EditorSelectionOrCaret;
 
@@ -61,7 +62,7 @@ export const withMultipleSelections = (
 
 			// Selections may disappear (e.g. running delete line for two cursors on the same line)
 			if (selection) {
-				const newSelection = callback(editor, selection, options.args);
+				const newSelection = callback(editor, selection, i, options.args);
 				newSelections.push(newSelection);
 			}
 		}

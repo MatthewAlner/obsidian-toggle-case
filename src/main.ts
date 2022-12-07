@@ -19,7 +19,8 @@ const DEFAULT_SETTINGS: IPluginSettings = {
 }
 
 export default class ToggleCasePlugin extends Plugin {
-	settings: IPluginSettings;
+	public settings: IPluginSettings;
+	private caseSyncSelectedText: string | null = null;
 
 	async onload() {
 		await this.loadSettings();
@@ -31,7 +32,7 @@ export default class ToggleCasePlugin extends Plugin {
 			editorCallback: (editor) =>
 				withMultipleSelections(
 					editor,
-					(editor, selection) => this.toggleCase(editor,selection),
+					(editor, selection, index) => this.toggleCase(editor,selection, index),
 					{ ...defaultMultipleSelectionOptions }
 				),
 		});
@@ -48,7 +49,7 @@ export default class ToggleCasePlugin extends Plugin {
 		await this.saveData(this.settings);
 	}
 
-	private toggleCase( editor: Editor, selection: EditorSelection ) {
+	private toggleCase( editor: Editor, selection: EditorSelection, index: number ) {
 		let { from, to } = getSelectionBoundaries(selection);
 		let selectedText = editor.getRange(from, to);
 
@@ -60,7 +61,7 @@ export default class ToggleCasePlugin extends Plugin {
 			selectedText = editor.getRange(anchor, head);
 		}
 
-		const replacementText: string = this.getNextCase(selectedText);
+		const replacementText: string = this.getNextCase(selectedText, index);
 		editor.replaceRange(replacementText, from, to);
 
 		return selection;
@@ -83,12 +84,22 @@ export default class ToggleCasePlugin extends Plugin {
 			.join('')
 	}
 
-	private getNextCase(selectedText: string): string {
-		const textUpper = selectedText.toUpperCase();
-		const textLower = selectedText.toLowerCase();
-		const textTitle = this.toTitleCase(selectedText);
+	private getNextCase(selectedText: string, index: number): string {
+		let textToCheck: string = selectedText;
 
-		switch(selectedText) {
+		if (this.settings.shouldSyncCaseMultiCursor && index === 0) {
+			this.caseSyncSelectedText = selectedText;
+		}
+
+		if (this.settings.shouldSyncCaseMultiCursor && this.caseSyncSelectedText) {
+			textToCheck = this.caseSyncSelectedText;
+		}
+
+		const textUpper = textToCheck.toUpperCase();
+		const textLower = textToCheck.toLowerCase();
+		const textTitle = this.toTitleCase(textToCheck);
+
+		switch(textToCheck) {
 			case textUpper: {
 				return textLower;
 			}
