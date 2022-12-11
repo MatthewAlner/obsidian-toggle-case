@@ -1,9 +1,9 @@
 {
 	"id": "obsidian-toggle-case",
 	"name": "Toggle Case",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"minAppVersion": "0.15.0",
-	"description": "This is a sample plugin to toggle between `lowercase` `UPPERCASE` and `Title Case`",
+	"description": "This is an Obsidian plugin to toggle between `lowercase` `UPPERCASE` and `Title Case`",
 	"author": "automattech",
 	"authorUrl": "https://github.com/MatthewAlner/obsidian-toggle-case",
 	"isDesktopOnly": false
