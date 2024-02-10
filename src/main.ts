@@ -84,8 +84,8 @@ export default class ToggleCasePlugin extends Plugin {
 			.join('')
 	}
 	private toSentenceCase(selectedText: string) {
-	    return selectedText.charAt(0).toUpperCase() + selectedText.slice(1).toLowerCase();
-	  }
+		return selectedText.charAt(0).toUpperCase() + selectedText.slice(1).toLowerCase();
+	}
 	private getNextCase(selectedText: string, index: number): string {
 		let textToCheck: string = selectedText;
 
@@ -114,7 +114,7 @@ export default class ToggleCasePlugin extends Plugin {
 			}
 			case checkTextSentence: {
 				return selectedText.toUpperCase();
-		  	}
+			}
 			default: {
 				return selectedText.toUpperCase();
 			}
