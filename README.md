@@ -1,3 +1,7 @@
+# NO LONGER SUPPORTED
+
+i've stopped maintaining this repo as personally i've moved to using [obsidian-editor-shortcuts](obsidian://show-plugin?id=obsidian-editor-shortcuts) it does everything this plugin does and way more.
+
 # Toggle Case
 
 This [Obsidian](https://obsidian.md) plugin adds a command to toggle the case of your selection between `lowercase` => `Title Case` => `UPPERCASE` 
