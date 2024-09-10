@@ -1,8 +1,6 @@
 # NO LONGER SUPPORTED
 
-
-
-> [!WARN]
+> [!WARNING]
 > i've stopped maintaining this repo as personally i've moved to using [obsidian-editor-shortcuts](https://github.com/timhor/obsidian-editor-shortcuts) it does everything this plugin does and way more.
 
 # Toggle Case
