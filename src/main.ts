@@ -83,7 +83,9 @@ export default class ToggleCasePlugin extends Plugin {
 			})
 			.join('')
 	}
-
+	private toSentenceCase(selectedText: string) {
+		return selectedText.charAt(0).toUpperCase() + selectedText.slice(1).toLowerCase();
+	}
 	private getNextCase(selectedText: string, index: number): string {
 		let textToCheck: string = selectedText;
 
@@ -98,6 +100,7 @@ export default class ToggleCasePlugin extends Plugin {
 		const checkTextUpper = textToCheck.toUpperCase();
 		const checkTextLower = textToCheck.toLowerCase();
 		const checkTextTitle = this.toTitleCase(textToCheck);
+		const checkTextSentence = this.toSentenceCase(textToCheck);
 
 		switch(textToCheck) {
 			case checkTextUpper: {
@@ -107,6 +110,9 @@ export default class ToggleCasePlugin extends Plugin {
 				return this.toTitleCase(selectedText);
 			}
 			case checkTextTitle: {
+				return this.toSentenceCase(selectedText);
+			}
+			case checkTextSentence: {
 				return selectedText.toUpperCase();
 			}
 			default: {
